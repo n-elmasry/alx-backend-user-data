@@ -5,16 +5,6 @@ from typing import List
 import re
 import logging
 
-PII_FIELDS = ("name", "email", "phone", "ssn", "password")
-
-
-def filter_datum(fields: List[str], redaction: str,
-                 message: str, separator: str) -> str:
-    """returns the log message obfuscated"""
-    pattern = '|'.join([f'{field}=.*?(?={separator}|$)' for field in fields])
-    return re.sub(
-        pattern, lambda m: f'{m.group(0).split("=")[0]}={redaction}', message)
-
 
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class"""
@@ -34,6 +24,17 @@ class RedactingFormatter(logging.Formatter):
                             original_message, self.SEPARATOR)
 
 
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
+
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str) -> str:
+    """returns the log message obfuscated"""
+    pattern = '|'.join([f'{field}=.*?(?={separator}|$)' for field in fields])
+    return re.sub(
+        pattern, lambda m: f'{m.group(0).split("=")[0]}={redaction}', message)
+
+
 def get_logger() -> logging.Logger:
     """logger"""
     logger = logging.getLogger("user_data")
@@ -45,6 +46,7 @@ def get_logger() -> logging.Logger:
     stream_handler = logging.StreamHandler()
 
     formatter = RedactingFormatter(PII_FIELDS)
+    stream_handler.setFormatter(formatter)
 
     logger.addHandler(stream_handler)
 
