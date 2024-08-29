@@ -65,3 +65,28 @@ def get_db() -> MySQLConnection:
         database=os.getenv('PERSONAL_DATA_DB_NAME')
     )
     return connection
+
+
+def main() -> None:
+    """main function"""
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+
+    headers = [field[0] for field in cursor.description]
+    logger = get_logger()
+
+    for row in cursor:
+        log_msg = ''
+        for i, j in zip(row, headers):
+            log_msg += f'{j}={(i)}; '
+
+        logger.info(log_msg)
+
+    cursor.close()
+    db.close()
+
+
+if __name__ == '__main__':
+    main()
