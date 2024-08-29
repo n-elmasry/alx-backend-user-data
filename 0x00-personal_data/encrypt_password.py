@@ -8,13 +8,11 @@ from bcrypt import checkpw
 
 def hash_password(password: str) -> bytes:
     """returns a salted, hashed password"""
-    password_bytes = password.encode('UTF-8')
-    hashed_pwd = hashpw(password_bytes, gensalt())
 
-    return hashed_pwd
+    return hashpw(password.encode('utf-8'), gensalt())
 
 
 def is_valid(hashed_password: bytes, password: str) -> bool:
     """validate that the provided password matches the hashed password"""
-    password = password.encode('UTF-8')
+    password = password.encode('utf-8')
     return checkpw(password, hashed_password)
