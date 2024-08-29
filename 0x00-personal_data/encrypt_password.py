@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """hash_password"""
 
-from bcrypt import checkpw
 import bcrypt
 
 
@@ -13,4 +12,4 @@ def hash_password(password: str) -> bytes:
 def is_valid(hashed_password: bytes, password: str) -> bool:
     """validate that the provided password matches the hashed password"""
     password = password.encode('utf-8')
-    return checkpw(password, hashed_password)
+    return bcrypt.checkpw(password, hashed_password)
