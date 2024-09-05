@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """ Flask view that handles all routes for the Session authentication."""
-from flask import request
+from flask import request, make_response
 from api.v1.views import app_views
 from flask import jsonify, request
 from models.user import User
-from os import abort, environ, getenv
+from os import getenv
 
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
@@ -21,16 +21,17 @@ def session_login() -> str:
     users = User.search({'email': email})
 
     if not users:
-        return jsonify({"error": "no user found for this email"}, 404)
+        return jsonify({"error": "no user found for this email"}), 404
 
     user = users[0]
     if not user.is_valid_password(password):
-        return jsonify({"error": "wrong password"}, 401)
+        return jsonify({"error": "wrong password"}), 401
 
     from api.v1.app import auth
-    session_id = auth.create_session(user.id)
-    cookie_response = getenv('SESSION_NAME')
-    user_dict = jsonify(user.to_json())
 
-    user_dict.set_coockie(cookie_response, session_id)
-    return user_dict
+    session_id = auth.create_session(user.id)
+    cookie_name = getenv('SESSION_NAME')
+
+    response = make_response(jsonify(user.to_json()))
+    response.set_cookie(cookie_name, session_id)
+    return response
