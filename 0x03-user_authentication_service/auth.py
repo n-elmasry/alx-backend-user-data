@@ -70,14 +70,14 @@ class Auth:
         return user
 
     def destroy_session(self, user_id: int) -> None:
-        """"updates the corresponding user’s session ID to None."""
+        """"updates the corresponding users session ID to None."""
         try:
             self._db.update_user(user_id, session_id=None)
         except NoResultFound:
             pass
 
     def get_reset_password_token(self, email: str) -> str:
-        """pdate the user’s reset_token database field. Return the token."""
+        """pdate the users reset_token database field. Return the token."""
         user = self._db.find_user_by(email=email)
         if user is None:
             raise ValueError()
