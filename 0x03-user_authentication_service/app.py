@@ -2,6 +2,7 @@
 """Flask app."""
 from flask import Flask, jsonify, request, abort, make_response, redirect
 from auth import Auth
+from uuid import uuid4
 
 app = Flask(__name__)
 AUTH = Auth()
@@ -65,6 +66,20 @@ def profile():
     if user is None:
         abort(403)
     return jsonify({"email": user.email}), 200
+
+
+@app.route('', methods='POST', strict_slashes=False)
+def get_reset_password_token():
+    """ respond to the POST reset_password route"""
+    email = request.form.get('email')
+    if email is None:
+        abort(403)
+    try:
+        new_token = AUTH.get_reset_password_token(email)
+    except ValueError:
+        abort(403)
+
+    return jsonify({"email": email, "reset_token": new_token}), 200
 
 
 if __name__ == "__main__":

@@ -77,7 +77,8 @@ class Auth:
             pass
 
     def get_reset_password_token(self, email: str) -> str:
-        """pdate the users reset_token database field. Return the token."""
+        """update the users reset_token database field Return the token
+        """
         user = self._db.find_user_by(email=email)
         if user is None:
             raise ValueError()
