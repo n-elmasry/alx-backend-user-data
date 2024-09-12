@@ -45,9 +45,10 @@ class Auth:
     def create_session(self, email: str) -> str:
         """returns the session ID as a string
         """
+        new_uuid = _generate_uuid()
+
         try:
             user = self._db.find_user_by(email=email)
-            new_uuid = _generate_uuid()
             self._db.update_user(user.id, session_id=new_uuid)
             return new_uuid
         except NoResultFound:
