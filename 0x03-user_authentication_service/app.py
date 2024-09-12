@@ -44,16 +44,13 @@ def login() -> str:
 @app.route('/sessions', methods=['DELETE'], strict_slashes=False)
 def logout():
     """destroy the session and redirect the user to GET /"""
-    sessionId = request.cookies.get('session_id')
-    user = AUTH.get_user_from_session_id(session_id=sessionId)
+    session_id = request.cookies.get('session_id')
+    user = AUTH.get_user_from_session_id(session_id=session_id)
     if user is None:
         abort(403)
 
     AUTH.destroy_session(user.id)
-    response = make_response(redirect('/'))
-    response.delete_cookie('sessionId')
-
-    return response
+    return redirect('/')
 
 
 if __name__ == "__main__":
