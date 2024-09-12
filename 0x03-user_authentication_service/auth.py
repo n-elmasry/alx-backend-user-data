@@ -64,9 +64,10 @@ class Auth:
             return None
         try:
             user = self._db.find_user_by(session_id=session_id)
+            return user.email
         except NoResultFound:
             return None
-        return user
+        # return user
 
     def destroy_session(self, user_id: int) -> None:
         """"updates the corresponding user’s session ID to None."""
