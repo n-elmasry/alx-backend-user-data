@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 """auth"""
-from bcrypt import hashpw, gensalt
+from bcrypt import hashpw, gensalt, checkpw
 from db import DB
 from user import User
 from sqlalchemy.orm.exc import NoResultFound
+from uuid import uuid4
 
 
 def _hash_password(password: str) -> bytes:
     """ return salted hash of the input password """
     return hashpw(password.encode('utf-8'), gensalt())
+
+
+def _generate_uuid() -> str:
+    """return a string representation of a new UUID"""
+    return str(uuid4())
 
 
 class Auth:
@@ -27,3 +33,11 @@ class Auth:
         except NoResultFound:
             return self._db.add_user(email, _hash_password(password))
         raise ValueError(f'User {email} already exists.')
+
+    def valid_login(self, email: str, password: str) -> bool:
+        """check the password If it matches return True. Else return False"""
+        try:
+            user = self._db.find_user_by(email=email)
+            return checkpw(password.encode('utf-8'), user.hashed_password)
+        except NoResultFound:
+            return False
