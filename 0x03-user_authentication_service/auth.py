@@ -61,7 +61,6 @@ class Auth:
     def get_user_from_session_id(self, session_id: str) -> Union[User, None]:
         """Retrieves a user based on a given session ID.
         """
-        user = None
         if session_id is None:
             return None
         try:
@@ -72,4 +71,7 @@ class Auth:
 
     def destroy_session(self, user_id: int) -> None:
         """"updates the corresponding user’s session ID to None."""
-        pass
+        try:
+            self._db.update_user(user_id, session_id=None)
+        except NoResultFound:
+            pass
