@@ -72,7 +72,8 @@ def profile():
 def get_reset_password_token() -> str:
     """ respond to the POST reset_password route"""
     email = request.form.get('email')
-    if email is None:
+    is_registered = AUTH.create_session(email)
+    if not is_registered:
         abort(403)
     try:
         new_token = AUTH.get_reset_password_token(email)
