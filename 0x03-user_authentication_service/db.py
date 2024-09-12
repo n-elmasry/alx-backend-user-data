@@ -40,3 +40,26 @@ class DB:
         self._session.add(user)
         self._session.commit()
         return user
+
+    def find_user_by(self, **kwargs) -> User:
+        """" returns the first row found in the users table """
+        keys = ['id', 'email', 'hashed_password', 'session_id',
+                'reset_token']
+        for key in kwargs.keys():
+            if key not in keys:
+                raise InvalidRequestError
+            user = self._session.query(User).filter_by(**kwargs).first()
+            if user is None:
+                raise NoResultFound
+            return user
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """update the user's attributes"""
+        user = self.find_user_by(id=user_id)
+
+        for key, value in kwargs.items():
+            if hasattr(user, key):
+                user.key = value
+            else:
+                raise ValueError
+        self._session.commit()
